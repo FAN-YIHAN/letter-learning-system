@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小朋友26个英文字母记忆乐园</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: '#FF87BB',
+                        sky: '#74C0FC',
+                        orange: '#FFAA47',
+                        green: '#51CF66',
+                        purple: '#9775FA',
+                        yellow: '#FFE066',
+                    },
+                    fontFamily: {
+                        cute: ["Comic Sans MS", "Microsoft YaHei", "sans-serif"],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: "Comic Sans MS", Microsoft YaHei, sans-serif;
+        }
+        body {
+            background: linear-gradient(120deg, #fff0f6, #e8f7ff);
+            background-image: radial-gradient(#ffd6e7 10%, transparent 11%),
+            radial-gradient(#cfe7ff 10%, transparent 11%);
+            background-size: 40px 40px;
+        }
+        .letter-card {
+            transition: all 0.3s ease;
+            animation: bounce 3s infinite alternate;
+        }
+        .letter-card:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-5px); }
+        }
+        .box-shadow-cute {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        /* 自定义单选样式美化 */
+        .radio-item {
+            width: 60px;
+            height: 60px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 26px;
+            font-weight: bold;
+            transition: 0.2s;
+            border: 3px solid transparent;
+            background-color: rgba(116, 192, 252, 0.6);
+        }
+        .radio-item input {
+            display: none;
+        }
+        /* 选中状态：外发光 + 边框 + 放大 */
+        .radio-item.selected {
+            border-color: #fff;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #6366f1, 0 0 20px #6366f1;
+            transform: scale(1.08);
+        }
+        /* 正确反馈（闪绿光） */
+        .radio-item.correct-fb {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #22c55e, 0 0 30px #4ade80;
+            transform: scale(1.1);
+            background-color: #86efac;
+        }
+        /* 错误反馈（闪红光） */
+        .radio-item.wrong-fb {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #ef4444, 0 0 30px #f87171;
+            transform: scale(0.95);
+            background-color: #fca5a5;
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+        @keyframes shake {
+            0%,100%{transform: translateX(0)}
+            25%{transform: translateX(-8px)}
+            75%{transform: translateX(8px)}
+        }
+
+        .correct-animate {
+            animation: correctPop 0.5s ease;
+        }
+        @keyframes correctPop {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.4); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-badge {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 0.3rem 1.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        .result-correct {
+            background: #86efac;
+            color: #166534;
+            box-shadow: 0 0 20px #4ade80;
+        }
+        .result-wrong {
+            background: #fca5a5;
+            color: #991b1b;
+            box-shadow: 0 0 20px #f87171;
+        }
+        /* 不可点击状态 */
+        .radio-item.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .radio-item.disabled:hover {
+            transform: none;
+        }
+        .radio-item:not(.disabled):hover {
+            transform: scale(1.05);
+            filter: brightness(1.05);
+        }
+        /* 字母展示大号样式 */
+        .big-letter-display {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1.2;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.08);
+        }
+        @media (max-width: 640px) {
+            .big-letter-display {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body class="px-4 py-6 md:px-10">
+    <div class="max-w-6xl mx-auto">
+        <!-- 头部标题 -->
+        <div class="text-center mb-8">
+            <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-purple drop-shadow-md">
+                <i class="fa fa-star text-yellow animate-pulse"></i> 26英文字母记忆小课堂 <i class="fa fa-star text-yellow animate-pulse"></i>
+            </h1>
+        </div>
+
+        <!-- 第一块：26个字母总览卡片 -->
+        <div class="bg-white/80 rounded-3xl p-6 mb-8 box-shadow-cute backdrop-blur-sm">
+            <h2 class="text-xl font-bold text-pink mb-4 flex items-center gap-2">
+                <i class="fa fa-book"></i> 全部字母一览表（大写+小写）
+            </h2>
+            <div id="letterWrap" class="grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-3">
+                <!-- 字母JS动态渲染 -->
+            </div>
+        </div>
+
+        <!-- 练习区域：三列布局 -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <!-- 题型一：给中间字母 → 选择左右邻居 -->
+            <div class="bg-white/80 rounded-3xl p-6 box-shadow-cute backdrop-blur-sm">
+                <h3 class="text-lg font-bold text-sky mb-4">📌 题型一：知道中间字母 → 选择左、右字母</h3>
+                <div class="flex items-center justify-center gap-3 my-6 flex-wrap">
+                    <div>
+                        <p class="text-center text-sky mb-2 text-sm">左边</p>
+                        <div id="left1Box" class="flex gap-2 flex-wrap justify-center"></div>
+                    </div>
+                    <span id="mid1" class="w-14 h-14 flex items-center justify-center text-3xl font-bold bg-sky/20 rounded-xl mx-2"></span>
+                    <div>
+                        <p class="text-center text-sky mb-2 text-sm">右边</p>
+                        <div id="right1Box" class="flex gap-2 flex-wrap justify-center"></div>
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-center flex-wrap">
+                    <button onclick="genQ1()" class="px-3 py-1.5 bg-sky text-white rounded-full hover:bg-sky/80 transition text-sm">下一题</button>
+                    <button onclick="checkQ1()" class="px-3 py-1.5 bg-green text-white rounded-full hover:bg-green/80 transition text-sm">核对</button>
+                </div>
+                <div id="tip1Container" class="text-center mt-2 min-h-[2.8rem] flex items-center justify-center text-sm"></div>
+            </div>
+
+            <!-- 题型二：给左右字母 → 选择中间字母 -->
+            <div class="bg-white/80 rounded-3xl p-6 box-shadow-cute backdrop-blur-sm">
+                <h3 class="text-lg font-bold text-orange mb-4">📌 题型二：知道左右字母 → 选择中间字母</h3>
+                <div class="flex items-center justify-center gap-3 my-6 flex-wrap">
+                    <span id="left2" class="w-12 h-12 flex items-center justify-center text-2xl font-bold bg-orange/20 rounded-xl"></span>
+                    <div>
+                        <p class="text-center text-orange mb-2 text-sm">中间</p>
+                        <div id="mid2Box" class="flex gap-2 flex-wrap justify-center"></div>
+                    </div>
+                    <span id="right2" class="w-12 h-12 flex items-center justify-center text-2xl font-bold bg-orange/20 rounded-xl"></span>
+                </div>
+                <div class="flex gap-2 justify-center flex-wrap">
+                    <button onclick="genQ2()" class="px-3 py-1.5 bg-orange text-white rounded-full hover:bg-orange/80 transition text-sm">下一题</button>
+                    <button onclick="checkQ2()" class="px-3 py-1.5 bg-green text-white rounded-full hover:bg-green/80 transition text-sm">核对</button>
+                </div>
+                <div id="tip2Container" class="text-center mt-2 min-h-[2.8rem] flex items-center justify-center text-sm"></div>
+            </div>
+
+            <!-- 题型三：认字母（大小写） -->
+            <div class="bg-white/80 rounded-3xl p-6 box-shadow-cute backdrop-blur-sm">
+                <h3 class="text-lg font-bold text-pink mb-4">📌 题型三：认一认这个字母</h3>
+                <div class="flex flex-col items-center justify-center my-4">
+                    <div id="letterDisplayBox" class="bg-gradient-to-br from-pink/20 to-purple/20 rounded-3xl p-6 w-full max-w-[200px] mx-auto text-center">
+                        <span id="bigLetterDisplay" class="big-letter-display block text-purple-700">A</span>
+                        <span id="smallLetterDisplay" class="text-3xl text-purple-500 block mt-1">a</span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-center text-pink mb-2 text-sm">这个字母是？</p>
+                        <div id="letterRecogBox" class="flex gap-3 flex-wrap justify-center"></div>
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-center flex-wrap">
+                    <button onclick="genQ3()" class="px-3 py-1.5 bg-pink text-white rounded-full hover:bg-pink/80 transition text-sm">下一题</button>
+                    <button onclick="checkQ3()" class="px-3 py-1.5 bg-green text-white rounded-full hover:bg-green/80 transition text-sm">核对</button>
+                </div>
+                <div id="tip3Container" class="text-center mt-2 min-h-[2.8rem] flex items-center justify-center text-sm"></div>
+            </div>
+        </div>
+
+        <!-- 底部提示 -->
+        <p class="text-center mt-8 text-gray-500 text-sm">💡 点击字母色块即可选中，选中后会有发光边框～</p>
+    </div>
+
+    <script>
+        // ===== 音效函数（使用Web Audio API生成简单提示音） =====
+        function playSound(type) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                if (type === 'correct') {
+                    oscillator.frequency.setValueAtTime(523, audioCtx.currentTime);
+                    oscillator.frequency.setValueAtTime(659, audioCtx.currentTime + 0.15);
+                    oscillator.frequency.setValueAtTime(784, audioCtx.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                } else {
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.4);
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch(e) {
+                console.log("音效播放失败（不影响使用）");
+            }
+        }
+
+        // 26字母数组
+        const letters = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+        const colorList = ['bg-pink/80','bg-sky/80','bg-orange/80','bg-green/80','bg-purple/80','bg-yellow/80'];
+
+        // 渲染全部字母卡片
+        function renderLetters(){
+            const wrap = document.getElementById('letterWrap');
+            letters.forEach((item,idx)=>{
+                const color = colorList[idx % colorList.length];
+                const card = document.createElement('div');
+                card.className = `letter-card ${color} text-white w-full py-3 rounded-xl text-center text-xl font-bold cursor-pointer`;
+                card.innerHTML = `${item}<br><span class="text-sm opacity-90">${item.toLowerCase()}</span>`;
+                wrap.appendChild(card);
+            })
+        }
+        renderLetters();
+
+        // 随机生成2个选项（1正确 + 1错误）
+        function getTwoOptions(correctChar){
+            let opts = [correctChar];
+            while(opts.length < 2){
+                let rand = letters[Math.floor(Math.random() * 26)];
+                if(!opts.includes(rand)) opts.push(rand);
+            }
+            return opts.sort(() => Math.random() - 0.5);
+        }
+
+        // 通用：清除一个容器内所有radio的选中和反馈样式 + 启用
+        function clearRadioStyles(containerId){
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const items = container.querySelectorAll('.radio-item');
+            items.forEach(el => {
+                el.classList.remove('selected', 'correct-fb', 'wrong-fb', 'disabled');
+                const radio = el.querySelector('input');
+                if(radio) radio.checked = false;
+            });
+        }
+
+        function disableRadios(containerId){
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.querySelectorAll('.radio-item').forEach(el => el.classList.add('disabled'));
+        }
+
+        function enableRadios(containerId){
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.querySelectorAll('.radio-item').forEach(el => el.classList.remove('disabled'));
+        }
+
+        // ========== 题型1 ==========
+        let q1Index, q1LeftAns, q1RightAns;
+        let userSelectLeft = null, userSelectRight = null;
+
+        function genQ1(){
+            q1Index = Math.floor(Math.random()*24)+1;
+            q1LeftAns = letters[q1Index - 1];
+            q1RightAns = letters[q1Index + 1];
+            document.getElementById('mid1').innerText = letters[q1Index];
+            userSelectLeft = null;
+            userSelectRight = null;
+
+            document.getElementById('tip1Container').innerHTML = '';
+            clearRadioStyles('left1Box');
+            clearRadioStyles('right1Box');
+
+            const leftOpts = getTwoOptions(q1LeftAns);
+            const leftBox = document.getElementById('left1Box');
+            leftBox.innerHTML = "";
+            leftOpts.forEach(ch => {
+                let label = document.createElement('label');
+                label.className = "radio-item";
+                label.style.backgroundColor = '#74C0FC';
+                label.style.width = '50px';
+                label.style.height = '50px';
+                label.style.fontSize = '20px';
+                label.innerHTML = `<input type="radio" name="q1left" value="${ch}">${ch}`;
+                label.addEventListener('click', function(e){
+                    const siblings = leftBox.querySelectorAll('.radio-item');
+                    siblings.forEach(s => { s.classList.remove('selected'); const inp = s.querySelector('input'); if(inp) inp.checked = false; });
+                    this.classList.add('selected');
+                    const inp = this.querySelector('input');
+                    if(inp) inp.checked = true;
+                    userSelectLeft = ch;
+                    document.getElementById('tip1Container').innerHTML = '';
+                    leftBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                    rightBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                });
+                leftBox.appendChild(label);
+            })
+
+            const rightOpts = getTwoOptions(q1RightAns);
+            const rightBox = document.getElementById('right1Box');
+            rightBox.innerHTML = "";
+            rightOpts.forEach(ch => {
+                let label = document.createElement('label');
+                label.className = "radio-item";
+                label.style.backgroundColor = '#74C0FC';
+                label.style.width = '50px';
+                label.style.height = '50px';
+                label.style.fontSize = '20px';
+                label.innerHTML = `<input type="radio" name="q1right" value="${ch}">${ch}`;
+                label.addEventListener('click', function(e){
+                    const siblings = rightBox.querySelectorAll('.radio-item');
+                    siblings.forEach(s => { s.classList.remove('selected'); const inp = s.querySelector('input'); if(inp) inp.checked = false; });
+                    this.classList.add('selected');
+                    const inp = this.querySelector('input');
+                    if(inp) inp.checked = true;
+                    userSelectRight = ch;
+                    document.getElementById('tip1Container').innerHTML = '';
+                    leftBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                    rightBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                });
+                rightBox.appendChild(label);
+            })
+
+            enableRadios('left1Box');
+            enableRadios('right1Box');
+        }
+
+        function checkQ1(){
+            const tipContainer = document.getElementById('tip1Container');
+            const leftBox = document.getElementById('left1Box');
+            const rightBox = document.getElementById('right1Box');
+
+            if(userSelectLeft === null || userSelectRight === null){
+                tipContainer.innerHTML = `<span class="text-yellow-600">⚠️ 请先选择左边和右边的字母！</span>`;
+                return;
+            }
+
+            disableRadios('left1Box');
+            disableRadios('right1Box');
+
+            leftBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+            rightBox.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+
+            const leftItems = leftBox.querySelectorAll('.radio-item');
+            leftItems.forEach(el => {
+                const inp = el.querySelector('input');
+                if(inp && inp.value === q1LeftAns) el.classList.add('correct-fb');
+            });
+            const rightItems = rightBox.querySelectorAll('.radio-item');
+            rightItems.forEach(el => {
+                const inp = el.querySelector('input');
+                if(inp && inp.value === q1RightAns) el.classList.add('correct-fb');
+            });
+
+            const leftCorrect = (userSelectLeft === q1LeftAns);
+            const rightCorrect = (userSelectRight === q1RightAns);
+            const allCorrect = leftCorrect && rightCorrect;
+
+            let html = '';
+            if(allCorrect){
+                html = `<span class="result-badge result-correct correct-animate" style="font-size:1.2rem;padding:0.2rem 0.8rem;">✅ 完全正确！</span>`;
+                playSound('correct');
+            } else {
+                let wrongMsg = '';
+                if(!leftCorrect) wrongMsg += `左:${q1LeftAns} `;
+                if(!rightCorrect) wrongMsg += `右:${q1RightAns}`;
+                html = `<span class="result-badge result-wrong shake" style="font-size:1.2rem;padding:0.2rem 0.8rem;">❌ 再想想：${wrongMsg}</span>`;
+                playSound('wrong');
+                if(!leftCorrect){
+                    leftItems.forEach(el => {
+                        const inp = el.querySelector('input');
+                        if(inp && inp.value === userSelectLeft) el.classList.add('wrong-fb');
+                    });
+                }
+                if(!rightCorrect){
+                    rightItems.forEach(el => {
+                        const inp = el.querySelector('input');
+                        if(inp && inp.value === userSelectRight) el.classList.add('wrong-fb');
+                    });
+                }
+            }
+            tipContainer.innerHTML = html;
+        }
+
+        // ========== 题型2 ==========
+        let q2Index, q2MidAns;
+        let userSelectMid = null;
+
+        function genQ2(){
+            q2Index = Math.floor(Math.random()*24)+1;
+            q2MidAns = letters[q2Index];
+            document.getElementById('left2').innerText = letters[q2Index-1];
+            document.getElementById('right2').innerText = letters[q2Index+1];
+            userSelectMid = null;
+            document.getElementById('tip2Container').innerHTML = '';
+
+            clearRadioStyles('mid2Box');
+            const box = document.getElementById('mid2Box');
+            box.innerHTML = "";
+            const opts = getTwoOptions(q2MidAns);
+            opts.forEach(ch => {
+                let label = document.createElement('label');
+                label.className = "radio-item";
+                label.style.backgroundColor = '#FFAA47';
+                label.style.width = '50px';
+                label.style.height = '50px';
+                label.style.fontSize = '20px';
+                label.innerHTML = `<input type="radio" name="q2mid" value="${ch}">${ch}`;
+                label.addEventListener('click', function(e){
+                    const siblings = box.querySelectorAll('.radio-item');
+                    siblings.forEach(s => { s.classList.remove('selected'); const inp = s.querySelector('input'); if(inp) inp.checked = false; });
+                    this.classList.add('selected');
+                    const inp = this.querySelector('input');
+                    if(inp) inp.checked = true;
+                    userSelectMid = ch;
+                    document.getElementById('tip2Container').innerHTML = '';
+                    box.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                });
+                box.appendChild(label);
+            })
+            enableRadios('mid2Box');
+        }
+
+        function checkQ2(){
+            const tipContainer = document.getElementById('tip2Container');
+            const box = document.getElementById('mid2Box');
+
+            if(userSelectMid === null){
+                tipContainer.innerHTML = `<span class="text-yellow-600">⚠️ 请先选择中间字母！</span>`;
+                return;
+            }
+
+            disableRadios('mid2Box');
+            box.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+
+            const items = box.querySelectorAll('.radio-item');
+            items.forEach(el => {
+                const inp = el.querySelector('input');
+                if(inp && inp.value === q2MidAns) el.classList.add('correct-fb');
+            });
+
+            const isCorrect = (userSelectMid === q2MidAns);
+            let html = '';
+            if(isCorrect){
+                html = `<span class="result-badge result-correct correct-animate" style="font-size:1.2rem;padding:0.2rem 0.8rem;">✅ 完全正确！</span>`;
+                playSound('correct');
+            } else {
+                items.forEach(el => {
+                    const inp = el.querySelector('input');
+                    if(inp && inp.value === userSelectMid) el.classList.add('wrong-fb');
+                });
+                html = `<span class="result-badge result-wrong shake" style="font-size:1.2rem;padding:0.2rem 0.8rem;">❌ 应该是 ${q2MidAns}</span>`;
+                playSound('wrong');
+            }
+            tipContainer.innerHTML = html;
+        }
+
+        // ========== 题型3：认字母 ==========
+        let q3CorrectLetter;
+        let userSelectRecog = null;
+
+        function genQ3(){
+            const idx = Math.floor(Math.random() * 26);
+            q3CorrectLetter = letters[idx];
+            userSelectRecog = null;
+
+            document.getElementById('bigLetterDisplay').textContent = q3CorrectLetter;
+            document.getElementById('smallLetterDisplay').textContent = q3CorrectLetter.toLowerCase();
+            document.getElementById('tip3Container').innerHTML = '';
+
+            clearRadioStyles('letterRecogBox');
+            const box = document.getElementById('letterRecogBox');
+            box.innerHTML = "";
+            const opts = getTwoOptions(q3CorrectLetter);
+            opts.forEach(ch => {
+                let label = document.createElement('label');
+                label.className = "radio-item";
+                label.style.backgroundColor = '#FF87BB';
+                label.style.width = '60px';
+                label.style.height = '60px';
+                label.style.fontSize = '28px';
+                label.innerHTML = `<input type="radio" name="q3recog" value="${ch}">${ch}`;
+                label.addEventListener('click', function(e){
+                    const siblings = box.querySelectorAll('.radio-item');
+                    siblings.forEach(s => { s.classList.remove('selected'); const inp = s.querySelector('input'); if(inp) inp.checked = false; });
+                    this.classList.add('selected');
+                    const inp = this.querySelector('input');
+                    if(inp) inp.checked = true;
+                    userSelectRecog = ch;
+                    document.getElementById('tip3Container').innerHTML = '';
+                    box.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+                });
+                box.appendChild(label);
+            })
+            enableRadios('letterRecogBox');
+        }
+
+        function checkQ3(){
+            const tipContainer = document.getElementById('tip3Container');
+            const box = document.getElementById('letterRecogBox');
+
+            if(userSelectRecog === null){
+                tipContainer.innerHTML = `<span class="text-yellow-600">⚠️ 请先选择一个字母！</span>`;
+                return;
+            }
+
+            disableRadios('letterRecogBox');
+            box.querySelectorAll('.radio-item').forEach(el => el.classList.remove('correct-fb','wrong-fb'));
+
+            const items = box.querySelectorAll('.radio-item');
+            items.forEach(el => {
+                const inp = el.querySelector('input');
+                if(inp && inp.value === q3CorrectLetter) el.classList.add('correct-fb');
+            });
+
+            const isCorrect = (userSelectRecog === q3CorrectLetter);
+            let html = '';
+            if(isCorrect){
+                html = `<span class="result-badge result-correct correct-animate" style="font-size:1.2rem;padding:0.2rem 0.8rem;">✅ 认对啦！👍</span>`;
+                playSound('correct');
+            } else {
+                items.forEach(el => {
+                    const inp = el.querySelector('input');
+                    if(inp && inp.value === userSelectRecog) el.classList.add('wrong-fb');
+                });
+                html = `<span class="result-badge result-wrong shake" style="font-size:1.2rem;padding:0.2rem 0.8rem;">❌ 这是 ${q3CorrectLetter}</span>`;
+                playSound('wrong');
+            }
+            tipContainer.innerHTML = html;
+        }
+
+        // 初始化所有题型
+        genQ1();
+        genQ2();
+        genQ3();
+    </script>
+</body>
+</html>
